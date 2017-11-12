@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11134"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+    </objects>
+</document>
+
+
+/*
+#define BUFFER_OFFSET(x) ((const void*)(x))
+enum VAO_IDs { Triangles, NumVAOs };
+enum Buffer_IDs { ArrayBuffer, NumBuffers };
+
+enum Attrib_IDs { vPosition = 0 };
+
+GLuint VAOs[NumVAOs];
+GLuint Buffers[NumBuffers];
+
+const GLuint NumVertices = 6;
+
+
+
+void init(){
+
+GLfloat vertices[NumVertices][2] = {
+{ -0.90, -0.90 },
+{  0.85, -0.90 },
+{ -0.90,  0.85 },
+{  0.90, -0.85 },
+{  0.90,  0.90 },
+{ -0.85,  0.90 }
+};
+
+glCreateBuffers(NumBuffers, Buffers);
+glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+ShaderInfo shaders[] = {
+{ GL_VERTEX_SHADER, "triangle.vert" },
+{ GL_FRAGMENT_SHADER, "triangle.frag" },
+{ GL_NONE, NULL }
+};
+
+GLuint program = LoadShaders(shaders);
+glUseProgram(program);
+
+glGenVertexArrays(NumVAOs, VAOs);
+glBindVertexArray(VAOs[Triangles]);
+glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+glEnableVertexAttribArray(vPosition);}
+
+void display(){
+glClear(GL_COLOR_BUFFER_BIT);
+
+glBindVertexArray(VAOs[Triangles]);
+glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+
+glFlush();
+}
+*/
+
+
+
+
+{
+/****************************************************************
+//这里我偷懒，直接复制了代码，然后把传入参数的顺序换了一些，其他以下部分都没变，应该是刚好互换了顺序~~~
+
+
+//如果是情况(3):(3) polygon1有顶点位于polygon2内部，但 polygon2无顶点位于polygon1内部；
+//报告中2.6部分
+//以polygon1为基础，一个一个顶点的找
+//i,j分别给r,t作索引(r数组记录polygon1的顶点，t数组记录polygon2的顶点)。
+//k,s给polygon1/polygon2作索引
+****************************************************************/
+
+int array_length;
+bool polygon1_contains_polygon2 = true;
+i = 0;
+j = 0;
+for(k = 0;k < num2;k++){
+//2.6.1,对每个接下去顶点i进行如下处理
+for(s = 0;s<num1;s++){//如果线段有交点，则记录
+bool has_int =has_intersection(polygon2[k], polygon1[s], polygon2[(k+1<num2)?k+1:0], polygon1[(s+1<num1)?s+1:0]);
+
+if(has_int){
+r[i] = k;//r数组记录polygon2的顶点
+t[j] = s;//t数组记录polygon1的顶点
+i++;
+j++;
+polygon1_contains_polygon2 = false;
+}
+}
+}
+
+if(polygon1_contains_polygon2){
+//2.2,这里处理l了情况(2)中的特殊情况：
+//(2) polygon2有顶点位于polygon1内部，但 polygon1无顶点位于polygon2内部
+//特殊情况：polygon2∈polygon1
+
+for(i = 0; i < num2 ; i++){
+newpolygon_vertices[i*3+0] = polygon2[i][0];
+newpolygon_vertices[i*3+1] = polygon2[i][1];
+newpolygon_vertices[i*3+2] = polygon2[i][2];
+}
+
+k = num2;
+*length = k;
+
+return newpolygon_vertices;
+}
+else{
+//在这结束之后，得到了包含与相交线段有关的 顶点位置 的2个数组t和r
+//并且必定 i==j
+array_length = i;
+j = 0;
+GLfloat * newpoint;
+//2.6.3，正式求相交
+for(i = 0; i<num2;i++){
+
+if( ( !is_in_polygon(polygon1, num1, polygon2[i]) )
+&&( !is_in_array(r, array_length, i) ) ){
+//1)如果其在polygon1外部且不存在于r[]中，则跳过（什么都不做）；
+;
+}
+else if(( !is_in_polygon(polygon1, num1, polygon2[i]) )
+&& is_in_array(r, array_length, i) ){
+//2）如果其在polygon1外部但存在于r[]中
+//求出新的交点，然后压栈
+p = find_index(r, array_length, i);//在r数组里找到对应索引，然后得到存在t中的polygon1的顶点
+m = t[p];
+newpoint = intersection(polygon2[i], polygon1[m], polygon2[(i+1<num2)?i+1:0], polygon1[(m+1<num2)?m+1:0]);
+//压栈入新的那个newpolygon数组
+newpolygon[j][0] = newpoint[0];
+newpolygon[j][1] = newpoint[1];
+newpolygon[j][2] = newpoint[2];
+j++;
+//std::cout<<"show polygon at j: "<<j<<'\n';
+//show_polygon3(newpolygon, j);
+}
+else if( is_in_polygon(polygon1, num1, polygon2[i])
+&&( !is_in_array(r, array_length, i) ) ){
+//3)如果其位于polygon1内部且不存在于r[]中,
+//则直接压栈
+newpoint = polygon2[i];
+newpolygon[j][0] = newpoint[0];
+newpolygon[j][1] = newpoint[1];
+newpolygon[j][2] = newpoint[2];
+j++;
+//std::cout<<"show polygon at j: "<<j<<'\n';
+//show_polygon3(newpolygon, j);
+}
+else{
+//如果其位于polygon1内部且存在于r[]中,最复杂的一种情况。
+//将其压栈
+newpoint = polygon2[i];
+newpolygon[j][0] = newpoint[0];
+newpolygon[j][1] = newpoint[1];
+newpolygon[j][2] = newpoint[2];
+j++;
+//std::cout<<"show polygon at j: "<<j<<'\n';
+//show_polygon3(newpolygon, j);
+//并且则计算r[i]r[i]+1与t[i]t[i+1]的交点，再把这个交点压栈
+//这里的i和上述的i其实不是同一个！！！！产生了bug。。。这里的i指的是下面的p
+p = find_index(r, array_length, i);//在r数组里找到对应索引，然后得到存在t中的polygon1的顶点
+m = t[p];
+newpoint = intersection(polygon2[i], polygon1[m], polygon2[(i+1<num2)?i+1:0], polygon1[(m+1<num2)?m+1:0]);
+//压栈入新的那个newpolygon数组
+newpolygon[j][0] = newpoint[0];
+newpolygon[j][1] = newpoint[1];
+newpolygon[j][2] = newpoint[2];
+j++;
+//std::cout<<"show polygon at j: "<<j<<'\n';
+//show_polygon3(newpolygon, j);
+}
+}
+//以上最后得到了该得到的 2维顶点数组，将其转化为OpenGL能绑定的 1维数组 后return。
+
+show_polygon3(newpolygon, j);
+
+*length = j;
+
+for(int p = 0; p < *length ; p++){
+newpolygon_vertices[p*3+0] = newpolygon[p][0];
+newpolygon_vertices[p*3+1] = newpolygon[p][1];
+newpolygon_vertices[p*3+2] = newpolygon[p][2];
+}
+
+return newpolygon_vertices;
+
+}
+}

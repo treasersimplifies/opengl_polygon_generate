@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "E43C3933C5F0D46A05A3018577A2E1CA086E8FC2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "C5020965B87B6D9FFC73373D8B608B62C1930CC1" : 9223372036854775807,
+    "E43C3933C5F0D46A05A3018577A2E1CA086E8FC2" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "50FE6343-EB7E-487D-AC0E-CB420B5F0376",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "C5020965B87B6D9FFC73373D8B608B62C1930CC1" : "",
+    "E43C3933C5F0D46A05A3018577A2E1CA086E8FC2" : "xcode_prj\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ls_opengl_2",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ls_opengl_2.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:treasersimplifies\/opengl_polygon_generate.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C5020965B87B6D9FFC73373D8B608B62C1930CC1"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:treasersimplifies\/opengl_demo2.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E43C3933C5F0D46A05A3018577A2E1CA086E8FC2"
+    }
+  ]
+}

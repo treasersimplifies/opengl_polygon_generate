@@ -1,6 +1,6 @@
 //
 //
-//Created by Lusio  20171104
+//Created by Lusio  20171104  LS楼嵩3150102681
 //ZJU computer graphic presentation 1.
 //
 //
@@ -8,10 +8,11 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cmath>
+//以下2个是OpenGL4开发所需包含的第三方库，类似于GLUT，其实就是GLUT的升级版
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-//以下是我自己写的两个库函数文件：
+//以下是我自己写的两个库函数文件，包含了算法实现的所有东西：
 #include "myfunctions.hpp"
 #include "corefunctions.hpp"
 
@@ -88,7 +89,7 @@ const GLuint init(){
     };
     
     GLfloat polygon_points9[][3]={  //测试情况（2）（3）的求并运算，
-                                    //一条边与2条边都有交点的情况,成功！
+        //一条边与2条边都有交点的情况,成功！
         {1.0f,0.0f,0.0f},
         {0.0f,1.0f,0.0f},
         {0.0f,-1.0f,0.0f}
@@ -106,6 +107,24 @@ const GLuint init(){
         {0.2f ,-0.5f,0.0f}
     };
     
+    GLfloat polygon_points12[][3]={//凹多边形测试
+        {0.0f,0.75f,0.0f},
+        {-0.75f,0.75f,0.0f},
+        {-0.75f,-0.75f,0.0f},
+        {0.0f,-0.75f,0.0f}
+    };
+    GLfloat polygon_points13[][3]={
+        {-0.3f,0.0f,0.0f},
+        {1.0f,-1.0f,0.0f},
+        {0.5f,0.0f,0.0f},
+        {1.0f,1.0f,0.0f}
+    };
+    GLfloat polygon_points14[][3]={
+        {-0.3f,0.0f,0.0f},
+        {-0.5f,-0.5f,0.0f},
+        {0.8f,0.0f,0.0f},
+        {-0.5f,0.5f,0.0f}
+    };
     GLuint l_combine = 0;
     GLuint l_substract = 0;
     GLuint * combine_length;
@@ -114,9 +133,9 @@ const GLuint init(){
     substract_length = &l_substract;
     combine_length = &l_combine;
     
-    
-    const GLfloat * polygon_vertices_combine = polygon_substract(polygon_points9, 3 , polygon_points10, 3, combine_length);
-    
+    //这一行就是真正生产新顶点数组，即合成多边形的代码：
+    //    const GLfloat * polygon_vertices_combine = polygon_substract(polygon_points3, 6 , polygon_points4, 5, combine_length);
+    const GLfloat * polygon_vertices_combine = polygon_combine(polygon_points12, 4 , polygon_points14,4 , combine_length);
     std::cout
     <<"Get new CombinePoly vertices of "<< l_combine <<" points:\n";
     show_polygon2(polygon_vertices_combine, l_combine);
@@ -127,13 +146,6 @@ const GLuint init(){
     const GLuint number_of_vertices = (const GLuint)l_combine;//最后输出到drawarray里的长度；
     //static const GLfloat * polygon = (const GLfloat) polygon_vertices_combine ;
     
-    static const GLfloat polygon_vertices_in_the_end[3*6]={
-        0.0666667 , -0.4 , 0,
-        0.2 , 0 , 0,
-        0.117647 , 0.247059 , 0,
-        -0.5 , 0 , 0,
-        -0.2 , -0.4 , 0
-    };
     
     glClearColor(0.8f, 0.8f, 1.0f, 0.0f);
     glClear( GL_COLOR_BUFFER_BIT );
@@ -147,17 +159,18 @@ const GLuint init(){
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
+    
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     
-   
-    const char* vertex_shader =
+    
+    const char* vertex_shader =//着色器，shader，用GLSL语言编写，传给openGL的函数来进行编译。
     "#version 400\n"
     "in vec3 vp;"
     "void main() {"
     "  gl_Position = vec4(vp, 1.0);"
     "}";
-   
+    
     const char* fragment_shader =
     "#version 400\n"
     "out vec4 frag_colour;"
@@ -165,7 +178,7 @@ const GLuint init(){
     "  frag_colour = vec4(0.0, 0.0, 1.0, 1.0);"
     "}";
     
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    GLuint vs = glCreateShader(GL_VERTEX_SHADER);   //编译shader
     glShaderSource(vs, 1, &vertex_shader, NULL);   //vertex_shader
     glCompileShader(vs);
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
@@ -182,7 +195,7 @@ const GLuint init(){
                           0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
                           3,                  // size
                           GL_FLOAT,           // type
-                          GL_FALSE,           // normalized?
+                          GL_FALSE,           //
                           0,                  // stride
                           (void*)0            // array buffer offset
                           );
@@ -193,8 +206,8 @@ const GLuint init(){
 
 //由于我们只绘制一次，所以，其实display里的代码只会跑一次
 void display(const GLuint number_of_vertices){
-
-    glDrawArrays(GL_LINE_LOOP, 0, number_of_vertices);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, number_of_vertices);//真正绘制多边形的语句
     glDisableVertexAttribArray(0);
     
 }
